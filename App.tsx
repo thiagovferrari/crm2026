@@ -86,16 +86,22 @@ const App: React.FC = () => {
 
   const handleAddOrUpdateContact = async (contact: ContactWithDetails) => {
     try {
-      if (contacts.find(c => c.id === contact.id)) {
+      if (contact.id && contacts.find(c => c.id === contact.id)) {
         await contactService.updateContact(contact.id, contact);
       } else {
-        const { id, ...newContact } = contact; // Supabase generates UUID
-        await contactService.addContact({ ...newContact, user_id: user?.id });
+        const { id, ...newContact } = contact;
+        // If id is present but not in list (shouldn't happen often) or undefined/empty string, we treat as new.
+        // Supabase expects NO id field to auto-generate UUID, or we must ensure we don't send a timestamp string as UUID.
+
+        // Ensure we remove 'id' if it's empty or invalid
+        const payload = { ...newContact, user_id: user?.id };
+        await contactService.addContact(payload);
       }
       // Realtime will trigger fetchContacts()
-    } catch (err) {
+    } catch (err: any) {
       console.error('Operation failed:', err);
-      alert('Error saving data. Please try again.');
+      console.error('Error details:', JSON.stringify(err, null, 2));
+      alert(`Erro ao salvar: ${err.message || JSON.stringify(err)}`);
     }
   };
 
