@@ -45,7 +45,7 @@ export interface InternalNote {
 
 export interface Contact {
   id: string;
-  user_id: string; // Multi-usuário ready
+  user_id: string;
   name: string;
   company: string;
   website: string;
@@ -56,9 +56,8 @@ export interface Contact {
   created_at: string;
 }
 
-// Interface composta para facilitar o gerenciamento de estado local antes do Supabase
 export interface ContactWithDetails extends Contact {
-  internalNotes: InternalNote[];
+  internal_notes: InternalNote[];
   interactions: Interaction[];
   financials: FinancialRecord[];
   alerts: BillingAlert[];

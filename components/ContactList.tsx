@@ -46,7 +46,7 @@ export const ContactList: React.FC<ContactListProps> = ({ contacts, onSelectCont
           </span>
           <input
             type="text"
-            placeholder="Search by name, company or industry..."
+            placeholder="Buscar por nome, empresa ou setor..."
             className="w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-[1.25rem] text-white placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 transition-all font-medium text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -59,10 +59,10 @@ export const ContactList: React.FC<ContactListProps> = ({ contacts, onSelectCont
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
           >
-            <option value="All" className="bg-[#0f172a]">Global Filter</option>
-            <option value={ContactStatus.ACTIVE} className="bg-[#0f172a]">Active Only</option>
-            <option value={ContactStatus.PROSPECT} className="bg-[#0f172a]">Prospects</option>
-            <option value={ContactStatus.INACTIVE} className="bg-[#0f172a]">Inactive</option>
+            <option value="All" className="bg-[#0f172a]">Filtro Global</option>
+            <option value={ContactStatus.ACTIVE} className="bg-[#0f172a]">Apenas Ativos</option>
+            <option value={ContactStatus.PROSPECT} className="bg-[#0f172a]">Em Prospecção</option>
+            <option value={ContactStatus.INACTIVE} className="bg-[#0f172a]">Inativos</option>
           </select>
 
           <button
@@ -70,7 +70,7 @@ export const ContactList: React.FC<ContactListProps> = ({ contacts, onSelectCont
             className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-[1.25rem] font-black uppercase tracking-widest text-xs flex items-center space-x-3 transition-all shadow-xl shadow-blue-600/20 active:scale-95 whitespace-nowrap"
           >
             <PlusIcon />
-            <span>Add New Entry</span>
+            <span>Novo Cadastro</span>
           </button>
         </div>
       </div>
@@ -107,7 +107,7 @@ export const ContactList: React.FC<ContactListProps> = ({ contacts, onSelectCont
             </div>
 
             <div className="flex items-center justify-between pt-6 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Added {new Date(contact.created_at).toLocaleDateString()}</span>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Adicionado em {new Date(contact.created_at).toLocaleDateString('pt-BR')}</span>
               <div className="flex space-x-2">
                 <button
                   onClick={(e) => handleEditClick(e, contact)}
@@ -181,11 +181,11 @@ const ContactModal: React.FC<{ mode: 'add' | 'edit'; initialData: ContactWithDet
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-[#05070a]/80 backdrop-blur-xl animate-fade-in">
-      <div className="glass-panel w-full max-w-2xl shadow-2xl relative overflow-hidden">
-        <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+      <div className="glass-panel w-full max-w-2xl shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto">
+        <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5 sticky top-0 bg-[#05070a] z-10">
           <div>
-            <h3 className="text-2xl font-black text-white tracking-tighter uppercase">{mode === 'add' ? 'Secure Entry' : 'Update Record'}</h3>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Database Management Protocol</p>
+            <h3 className="text-2xl font-black text-white tracking-tighter uppercase">{mode === 'add' ? 'Novo Registro' : 'Atualizar Registro'}</h3>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Protocolo de Gestão de Dados</p>
           </div>
           <button onClick={onClose} className="p-2 text-slate-500 hover:text-white transition-colors">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -193,38 +193,38 @@ const ContactModal: React.FC<{ mode: 'add' | 'edit'; initialData: ContactWithDet
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} className="p-10 space-y-8">
-          <Input label="Full Identity Name" value={formData.name} onChange={(v) => setFormData({ ...formData, name: v })} required />
+          <Input label="Nome Completo" value={formData.name} onChange={(v) => setFormData({ ...formData, name: v })} required />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Input label="Corporation" value={formData.company} onChange={(v) => setFormData({ ...formData, company: v })} required />
-            <Input label="Business Segment" value={formData.commercial_area} onChange={(v) => setFormData({ ...formData, commercial_area: v })} />
+            <Input label="Empresa" value={formData.company} onChange={(v) => setFormData({ ...formData, company: v })} required />
+            <Input label="Segmento" value={formData.commercial_area} onChange={(v) => setFormData({ ...formData, commercial_area: v })} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Input label="Secure Email" type="email" value={formData.email} onChange={(v) => setFormData({ ...formData, email: v })} required />
-            <Input label="Direct Line" value={formData.phone} onChange={(v) => setFormData({ ...formData, phone: v })} />
+            <Input label="E-mail Corporativo" type="email" value={formData.email} onChange={(v) => setFormData({ ...formData, email: v })} required />
+            <Input label="Telefone Direto" value={formData.phone} onChange={(v) => setFormData({ ...formData, phone: v })} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <Input label="Domain/Website" value={formData.website} onChange={(v) => setFormData({ ...formData, website: v })} />
+            <Input label="Site/Domínio" value={formData.website} onChange={(v) => setFormData({ ...formData, website: v })} />
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Lifecycle Status</label>
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Status do Ciclo</label>
               <select
                 className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-[1.25rem] text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all font-bold cursor-pointer"
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as ContactStatus })}
               >
-                <option value={ContactStatus.ACTIVE} className="bg-[#0f172a]">ACTIVE ASSET</option>
-                <option value={ContactStatus.PROSPECT} className="bg-[#0f172a]">PROSPECT LEAD</option>
-                <option value={ContactStatus.INACTIVE} className="bg-[#0f172a]">INACTIVE ARCHIVE</option>
+                <option value={ContactStatus.ACTIVE} className="bg-[#0f172a]">ATIVO</option>
+                <option value={ContactStatus.PROSPECT} className="bg-[#0f172a]">EM PROSPECÇÃO</option>
+                <option value={ContactStatus.INACTIVE} className="bg-[#0f172a]">INATIVO/ARQUIVADO</option>
               </select>
             </div>
           </div>
 
           <div className="pt-8 flex space-x-4">
-            <button type="button" onClick={onClose} className="flex-1 py-5 text-slate-500 font-bold hover:text-white transition-all uppercase text-[10px] tracking-widest">Abort Process</button>
+            <button type="button" onClick={onClose} className="flex-1 py-5 text-slate-500 font-bold hover:text-white transition-all uppercase text-[10px] tracking-widest">Cancelar</button>
             <button type="submit" className="flex-[2] py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-[0.98] uppercase text-xs tracking-[0.2em]">
-              {mode === 'add' ? 'Confirm Addition' : 'Apply Modifications'}
+              {mode === 'add' ? 'Confirmar Adição' : 'Salvar Alterações'}
             </button>
           </div>
         </form>

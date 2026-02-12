@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { supabase } from '../services/supabase';
 
 interface LoginProps {
     onLogin: (user: { id: string; email: string }) => void;
@@ -8,11 +9,31 @@ interface LoginProps {
 export const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulação de login - gera um ID único básico
-        onLogin({ id: email === 'admin@nexus.com' ? 'default-user' : 'user_' + Date.now(), email });
+        setLoading(true);
+        setError(null);
+
+        try {
+            if (isRegistering) {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                if (data.user) onLogin({ id: data.user.id, email: data.user.email! });
+                else alert('Check your email for confirmation link!');
+            } else {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                if (data.user) onLogin({ id: data.user.id, email: data.user.email! });
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -27,6 +48,12 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Nexus CRM</h2>
                     <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2">Intelligent Protocol Entry</p>
                 </div>
+
+                {error && (
+                    <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl mb-8 text-red-400 text-[10px] font-black uppercase tracking-widest text-center">
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
@@ -55,11 +82,21 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
                     <button
                         type="submit"
-                        className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase text-xs tracking-widest mt-8"
+                        disabled={loading}
+                        className="w-full py-5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 uppercase text-xs tracking-widest mt-8 disabled:opacity-50"
                     >
-                        Authorize Access
+                        {loading ? 'Processing...' : isRegistering ? 'Create Master Account' : 'Authorize Access'}
                     </button>
                 </form>
+
+                <div className="mt-8 text-center">
+                    <button
+                        onClick={() => setIsRegistering(!isRegistering)}
+                        className="text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors"
+                    >
+                        {isRegistering ? 'Already have account? Sign In' : 'Need authorization? Register'}
+                    </button>
+                </div>
 
                 <div className="mt-10 pt-10 border-t border-white/5 text-center">
                     <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">
