@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ContactWithDetails, ContactStatus } from '../types';
 
 interface ContactListProps {
@@ -127,7 +128,7 @@ export const ContactList: React.FC<ContactListProps> = ({ contacts, onSelectCont
         ))}
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && createPortal(
         <ContactModal
           mode={modalMode}
           initialData={selectedForEdit}
@@ -149,7 +150,8 @@ export const ContactList: React.FC<ContactListProps> = ({ contacts, onSelectCont
             }
             setIsModalOpen(false);
           }}
-        />
+        />,
+        document.body
       )}
     </div>
   );

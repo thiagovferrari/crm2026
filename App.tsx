@@ -52,18 +52,27 @@ const App: React.FC = () => {
     if (user) {
       fetchContacts();
 
+      let timeout: any;
+      const debouncedFetch = () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          fetchContacts();
+        }, 1000);
+      };
+
       // Subscribe to Realtime for all relevant tables
       const channel = supabase
         .channel('db-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'contacts' }, () => fetchContacts())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'interactions' }, () => fetchContacts())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'financials' }, () => fetchContacts())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts' }, () => fetchContacts())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'internal_notes' }, () => fetchContacts())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'contacts' }, debouncedFetch)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'interactions' }, debouncedFetch)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'financials' }, debouncedFetch)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts' }, debouncedFetch)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'internal_notes' }, debouncedFetch)
         .subscribe();
 
       return () => {
         supabase.removeChannel(channel);
+        clearTimeout(timeout);
       };
     }
   }, [user]);
