@@ -41,10 +41,14 @@ const App: React.FC = () => {
 
   const fetchContacts = async () => {
     try {
+      if (!user) return;
+      console.log('Fetching contacts for user:', user.id);
       const data = await contactService.getContacts();
+      console.log('Contacts fetched successfully:', data?.length || 0);
       setContacts(data as ContactWithDetails[]);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching contacts:', err);
+      alert(`Erro ao carregar contatos: ${err.message || JSON.stringify(err)}`);
     }
   };
 
@@ -100,14 +104,15 @@ const App: React.FC = () => {
 
       // 2. Add or Update logic
       if (contact.id && contacts.find(c => c.id === contact.id)) {
-        // Update existing contact
         await contactService.updateContact(contact.id, contactData);
       } else {
-        // Create new contact (Supabase generates ID)
         const payload = { ...contactData, user_id: user?.id };
         await contactService.addContact(payload);
       }
-      // Realtime will trigger fetchContacts() automatically
+
+      // 3. Manual refresh
+      await fetchContacts();
+
     } catch (err: any) {
       console.error('Operation failed:', err);
       console.error('Error details:', JSON.stringify(err, null, 2));
